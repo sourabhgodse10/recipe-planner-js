@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Planner and Grocery Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="chip"></p>
+        <h1>Recipe Planner and Grocery Generator</h1>
+        <p>Build recipes, map weekly meals, and auto-generate one shopping list.</p>
+      </header>
+
+      <section class="grid two-col">
+        <article class="panel">
+          <div class="panel-head">
+            <h2 id="recipe-form-title">Add Recipe</h2>
+            <button id="reset-form-btn" class="ghost" type="button">Reset</button>
+          </div>
+
+          <form id="recipe-form" class="stack">
+            <input id="edit-id" type="hidden" />
+            <label>
+              Recipe Name
+              <input id="recipe-name" required maxlength="80" placeholder="e.g., Chickpea Curry" />
+            </label>
+            <div class="inline two">
+              <label>
+                Category
+                <select id="recipe-category">
+                  <option value="breakfast">Breakfast</option>
+                  <option value="lunch">Lunch</option>
+                  <option value="dinner" selected>Dinner</option>
+                  <option value="snack">Snack</option>
+                </select>
+              </label>
+              <label>
+                Servings
+                <input id="recipe-servings" type="number" min="1" value="2" />
+              </label>
+            </div>
+
+            <div class="ingredients">
+              <div class="panel-head small-gap">
+                <h3>Ingredients</h3>
+                <button id="add-ingredient-btn" class="ghost" type="button">+ Ingredient</button>
+              </div>
+              <div id="ingredients-list" class="stack"></div>
+            </div>
+
+            <label>
+              Instructions
+              <textarea id="recipe-instructions" rows="4" placeholder="Short steps..."></textarea>
+            </label>
+
+            <button class="primary" type="submit">Save Recipe</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Recipe Library</h2>
+            <input id="recipe-search" class="search" placeholder="Search recipe..." />
+          </div>
+          <div id="recipe-list" class="cards"></div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Weekly Meal Plan</h2>
+          <button id="clear-week-btn" class="ghost" type="button">Clear Week</button>
+        </div>
+        <div class="planner-wrap">
+          <table id="meal-plan-table"></table>
+        </div>
+      </section>
+
+      <section class="grid two-col">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>Grocery List</h2>
+            <div class="inline-actions">
+              <button id="generate-list-btn" class="ghost" type="button">Generate</button>
+              <button id="copy-list-btn" class="ghost" type="button">Copy</button>
+            </div>
+          </div>
+          <div id="grocery-summary" class="muted">No list generated yet.</div>
+          <ul id="grocery-list" class="grocery-list"></ul>
+        </article>
+
+        <article class="panel">
+          <h2>Data Tools</h2>
+          <p class="muted">Export and import your recipes and meal plans.</p>
+          <div class="inline-actions">
+            <button id="export-data-btn" class="ghost" type="button">Export JSON</button>
+            <button id="import-data-btn" class="ghost" type="button">Import JSON</button>
+            <input id="import-file-input" type="file" accept="application/json" hidden />
+          </div>
+          <p id="toast" class="toast" aria-live="polite"></p>
+        </article>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

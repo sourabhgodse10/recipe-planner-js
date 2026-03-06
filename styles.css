@@ -1,0 +1,301 @@
+:root {
+  --bg-1: #fff7f2;
+  --bg-2: #eef8ff;
+  --surface: #ffffff;
+  --ink: #13263a;
+  --muted: #64758b;
+  --line: #d9e5ef;
+  --accent: #ff6b37;
+  --accent-2: #0f8b7a;
+  --danger: #b42318;
+  --shadow: 0 18px 34px rgba(14, 41, 63, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Manrope, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1000px 520px at 0% -10%, #ffd7be 0%, transparent 65%),
+    radial-gradient(900px 500px at 90% 0%, #c6fff4 0%, transparent 60%),
+    linear-gradient(170deg, var(--bg-1), var(--bg-2));
+}
+
+.page {
+  width: min(1160px, 92vw);
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.hero h1,
+.panel h2,
+.panel h3,
+th {
+  font-family: Sora, sans-serif;
+}
+
+.hero {
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  margin: 0.4rem 0;
+  font-size: clamp(1.9rem, 3.3vw, 2.8rem);
+}
+
+.hero p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.chip {
+  display: inline-block;
+  margin-bottom: 0.2rem;
+  padding: 0.32rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6f1f0f;
+  border: 1px solid #ffcfbb;
+  background: #ffecde;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.two-col {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.panel h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.small-gap {
+  margin-bottom: 0.4rem;
+}
+
+.stack {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.inline {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.inline.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 0.55rem 0.7rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 11px;
+  border: none;
+  padding: 0.52rem 0.72rem;
+  color: #fff;
+  background: linear-gradient(120deg, var(--accent), #ff8950);
+  transition: transform 130ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button.ghost {
+  color: var(--ink);
+  background: #f4f8fb;
+  border: 1px solid var(--line);
+}
+
+button.danger {
+  background: linear-gradient(120deg, var(--danger), #d92d20);
+}
+
+.search {
+  max-width: 200px;
+}
+
+.ingredients {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 0.7rem;
+}
+
+.ingredient-row {
+  display: grid;
+  grid-template-columns: 1.5fr 0.7fr 0.8fr auto;
+  gap: 0.5rem;
+}
+
+.cards {
+  display: grid;
+  gap: 0.7rem;
+  max-height: 570px;
+  overflow: auto;
+}
+
+.recipe-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.75rem;
+  background: #fbfdff;
+}
+
+.recipe-card h3 {
+  margin: 0 0 0.25rem;
+}
+
+.recipe-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.recipe-ingredients {
+  margin: 0.45rem 0;
+  padding-left: 1rem;
+  color: var(--ink);
+}
+
+.recipe-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.planner-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e7edf3;
+  text-align: left;
+  padding: 0.5rem;
+  min-width: 140px;
+}
+
+td select {
+  min-width: 170px;
+}
+
+.muted {
+  color: var(--muted);
+  margin: 0.2rem 0;
+}
+
+.inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.grocery-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.65rem 0 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.grocery-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #e1ebf4;
+  background: #f9fcff;
+}
+
+.toast {
+  min-height: 1.25rem;
+  margin-top: 0.8rem;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+.empty {
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 0.9rem;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .page {
+    width: min(1160px, 95vw);
+  }
+
+  .inline.two {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-row {
+    grid-template-columns: 1fr;
+  }
+}
