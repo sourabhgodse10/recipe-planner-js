@@ -14,6 +14,7 @@ A vanilla JavaScript web app to manage recipes, plan meals for the week, and gen
 - Auto-generate grocery totals from planned meals
 - Copy grocery list to clipboard
 - Export and import app data as JSON
+- Import recipes in bulk from Excel (`.xlsx/.xls/.csv`)
 - Persist recipes and meal plans with `localStorage`
 
 ## CRUD Coverage
@@ -40,6 +41,25 @@ python -m http.server 5500
 ```
 
 Then open `http://localhost:5500`.
+
+## Excel Import Format
+
+Use the first sheet with these columns (case-insensitive):
+
+- `Name` or `Recipe Name` (required)
+- `Category` (`breakfast`, `lunch`, `dinner`, or `snack`)
+- `Servings`
+- `Instructions`
+- `Ingredients` (required) in this format:
+  `IngredientName|Qty|Unit; IngredientName|Qty|Unit`
+
+Example:
+
+- `Chickpea Curry | dinner | 3 | Simmer for 20 minutes | Chickpeas|400|g; Tomato Puree|250|ml; Onion|1|pcs`
+
+Ready-to-use sample file:
+
+- [samples/recipe-import-sample.xlsx](/g:/Fresenius/recipe-planner-js/samples/recipe-import-sample.xlsx)
 
 ## Project Structure
 

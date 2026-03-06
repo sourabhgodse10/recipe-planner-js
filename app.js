@@ -73,6 +73,8 @@
     exportDataBtn: document.getElementById("export-data-btn"),
     importDataBtn: document.getElementById("import-data-btn"),
     importFileInput: document.getElementById("import-file-input"),
+    importExcelBtn: document.getElementById("import-excel-btn"),
+    importExcelInput: document.getElementById("import-excel-input"),
     toast: document.getElementById("toast")
   };
 
@@ -100,6 +102,8 @@
     ui.exportDataBtn.addEventListener("click", exportData);
     ui.importDataBtn.addEventListener("click", () => ui.importFileInput.click());
     ui.importFileInput.addEventListener("change", importData);
+    ui.importExcelBtn.addEventListener("click", () => ui.importExcelInput.click());
+    ui.importExcelInput.addEventListener("change", importExcelRecipes);
   }
 
   function createEmptyMealPlan() {
@@ -477,6 +481,134 @@
       }
     };
     reader.readAsText(file);
+  }
+
+  function importExcelRecipes(event) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (!window.XLSX) {
+      showToast("Excel import library not loaded. Refresh and try again.", true);
+      ui.importExcelInput.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const workbook = window.XLSX.read(reader.result, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[firstSheetName];
+        if (!sheet) {
+          throw new Error("No worksheet found in this file.");
+        }
+
+        const rows = window.XLSX.utils.sheet_to_json(sheet, { defval: "" });
+        if (!rows.length) {
+          throw new Error("Sheet is empty.");
+        }
+
+        let added = 0;
+        let skipped = 0;
+
+        rows.forEach((row) => {
+          const recipe = mapSheetRowToRecipe(row);
+          if (!recipe) {
+            skipped += 1;
+            return;
+          }
+          state.recipes.unshift({ id: createId(), ...recipe });
+          added += 1;
+        });
+
+        if (!added) {
+          throw new Error("No valid recipes found in sheet.");
+        }
+
+        persist();
+        renderRecipeCards();
+        renderMealPlan();
+        renderGroceryList([]);
+        ui.grocerySummary.textContent = "Excel import complete. Generate list to refresh groceries.";
+        showToast(`Imported ${added} recipe${added === 1 ? "" : "s"}${skipped ? `, skipped ${skipped}` : ""}.`);
+      } catch (error) {
+        showToast(error.message || "Could not import this Excel file.", true);
+      } finally {
+        ui.importExcelInput.value = "";
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function mapSheetRowToRecipe(row) {
+    if (!row || typeof row !== "object") {
+      return null;
+    }
+
+    const name = getCellByAliases(row, ["recipe name", "name", "recipe"]).trim();
+    if (!name) {
+      return null;
+    }
+
+    const categoryRaw = getCellByAliases(row, ["category", "meal type", "type"]).toLowerCase();
+    const category = ["breakfast", "lunch", "dinner", "snack"].includes(categoryRaw) ? categoryRaw : "dinner";
+
+    const servingsRaw = Number(getCellByAliases(row, ["servings", "serves", "portion", "portions"]));
+    const servings = Number.isFinite(servingsRaw) && servingsRaw > 0 ? Math.round(servingsRaw) : 2;
+
+    const instructions = getCellByAliases(row, ["instructions", "steps", "method", "description"]).trim();
+    const ingredientsRaw = getCellByAliases(row, ["ingredients", "ingredient list", "items"]);
+    const ingredients = parseIngredientsCell(ingredientsRaw);
+    if (!ingredients.length) {
+      return null;
+    }
+
+    return { name, category, servings, instructions, ingredients };
+  }
+
+  function parseIngredientsCell(rawValue) {
+    return String(rawValue || "")
+      .split(";")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const [name = "", qtyText = "", unit = ""] = part.split("|").map((item) => item.trim());
+        const qty = Number(qtyText || 1);
+        return {
+          name,
+          qty: Number.isFinite(qty) && qty > 0 ? qty : 1,
+          unit
+        };
+      })
+      .filter((ingredient) => ingredient.name);
+  }
+
+  function getCellByAliases(row, aliases) {
+    const normalizedRow = {};
+    Object.entries(row).forEach(([key, value]) => {
+      normalizedRow[normalizeCellKey(key)] = value;
+    });
+
+    for (const alias of aliases) {
+      const value = normalizedRow[normalizeCellKey(alias)];
+      if (value === undefined || value === null) {
+        continue;
+      }
+      const text = String(value).trim();
+      if (text) {
+        return text;
+      }
+    }
+    return "";
+  }
+
+  function normalizeCellKey(key) {
+    return String(key || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
   }
 
   function showToast(message, isError = false) {

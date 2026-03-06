@@ -97,17 +97,21 @@
 
         <article class="panel">
           <h2>Data Tools</h2>
-          <p class="muted">Export and import your recipes and meal plans.</p>
+          <p class="muted">Export and import your recipes and meal plans, including Excel bulk upload.</p>
           <div class="inline-actions">
             <button id="export-data-btn" class="ghost" type="button">Export JSON</button>
             <button id="import-data-btn" class="ghost" type="button">Import JSON</button>
+            <button id="import-excel-btn" class="ghost" type="button">Import Excel</button>
             <input id="import-file-input" type="file" accept="application/json" hidden />
+            <input id="import-excel-input" type="file" accept=".xlsx,.xls,.csv" hidden />
           </div>
+          <p class="muted">Excel format: Name, Category, Servings, Instructions, Ingredients (e.g. Eggs|4|pcs; Spinach|120|g).</p>
           <p id="toast" class="toast" aria-live="polite"></p>
         </article>
       </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
