@@ -12,7 +12,14 @@
   <body>
     <main class="page">
       <header class="hero">
-        <p class="chip"></p>
+        <div class="hero-top">
+          <p class="chip"></p>
+          <button id="theme-toggle-btn" class="ghost theme-toggle" type="button" aria-label="Toggle theme">
+            <span class="theme-icon sun" aria-hidden="true">☀️</span>
+            <span class="theme-icon moon" aria-hidden="true">🌙</span>
+            <span id="theme-toggle-label">Light</span>
+          </button>
+        </div>
         <h1>Recipe Planner and Grocery Generator</h1>
         <p>Build recipes, map weekly meals, and auto-generate one shopping list.</p>
       </header>

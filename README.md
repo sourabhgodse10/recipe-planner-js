@@ -9,6 +9,7 @@ A vanilla JavaScript web app to manage recipes, plan meals for the week, and gen
 ## Features
 
 - Add, edit, search, and delete recipes
+- Toggle light/dark theme from the header
 - Manage ingredient rows per recipe
 - Plan breakfast/lunch/dinner for each day of the week
 - Auto-generate grocery totals from planned meals

@@ -1,5 +1,6 @@
 (() => {
   const STORAGE_KEY = "recipe_planner_state_v1";
+  const THEME_STORAGE_KEY = "recipe_planner_theme_v1";
   const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const SLOTS = [
     { id: "breakfast", label: "Breakfast" },
@@ -52,6 +53,8 @@
   let state = loadState();
 
   const ui = {
+    themeToggleBtn: document.getElementById("theme-toggle-btn"),
+    themeToggleLabel: document.getElementById("theme-toggle-label"),
     recipeForm: document.getElementById("recipe-form"),
     formTitle: document.getElementById("recipe-form-title"),
     resetFormBtn: document.getElementById("reset-form-btn"),
@@ -80,6 +83,7 @@
   init();
 
   function init() {
+    applyInitialTheme();
     bindEvents();
     ensureMealPlanShape();
     resetForm();
@@ -89,6 +93,7 @@
   }
 
   function bindEvents() {
+    ui.themeToggleBtn.addEventListener("click", toggleTheme);
     ui.addIngredientBtn.addEventListener("click", () => addIngredientRow());
     ui.ingredientsList.addEventListener("click", onIngredientListClick);
     ui.recipeForm.addEventListener("submit", onRecipeSubmit);
@@ -102,6 +107,32 @@
     ui.exportCookbookBtn.addEventListener("click", exportCookingGuide);
     ui.importExcelBtn.addEventListener("click", () => ui.importExcelInput.click());
     ui.importExcelInput.addEventListener("change", importExcelRecipes);
+  }
+
+  function applyInitialTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme === "light" || savedTheme === "dark") {
+      setTheme(savedTheme, false);
+      return;
+    }
+
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(prefersDark ? "dark" : "light", false);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+  }
+
+  function setTheme(theme, persistTheme = true) {
+    document.documentElement.setAttribute("data-theme", theme);
+    ui.themeToggleLabel.textContent = theme === "dark" ? "Dark" : "Light";
+    ui.themeToggleBtn.setAttribute("aria-label", theme === "dark" ? "Switch to light theme" : "Switch to dark theme");
+    if (persistTheme) {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
   }
 
   function createEmptyMealPlan() {
