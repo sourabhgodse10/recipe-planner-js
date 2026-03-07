@@ -72,8 +72,6 @@
     copyListBtn: document.getElementById("copy-list-btn"),
     exportDataBtn: document.getElementById("export-data-btn"),
     exportCookbookBtn: document.getElementById("export-cookbook-btn"),
-    importDataBtn: document.getElementById("import-data-btn"),
-    importFileInput: document.getElementById("import-file-input"),
     importExcelBtn: document.getElementById("import-excel-btn"),
     importExcelInput: document.getElementById("import-excel-input"),
     toast: document.getElementById("toast")
@@ -102,8 +100,6 @@
     ui.copyListBtn.addEventListener("click", copyGroceryList);
     ui.exportDataBtn.addEventListener("click", exportData);
     ui.exportCookbookBtn.addEventListener("click", exportCookingGuide);
-    ui.importDataBtn.addEventListener("click", () => ui.importFileInput.click());
-    ui.importFileInput.addEventListener("change", importData);
     ui.importExcelBtn.addEventListener("click", () => ui.importExcelInput.click());
     ui.importExcelInput.addEventListener("change", importExcelRecipes);
   }
@@ -524,41 +520,6 @@
     link.click();
     URL.revokeObjectURL(url);
     showToast("Cooking guide exported.");
-  }
-
-  function importData(event) {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result || "{}"));
-        if (!Array.isArray(parsed.recipes) || typeof parsed.mealPlan !== "object") {
-          throw new Error("Invalid file format.");
-        }
-
-        state = {
-          recipes: parsed.recipes,
-          mealPlan: parsed.mealPlan
-        };
-        ensureMealPlanShape();
-        persist();
-        resetForm();
-        renderRecipeCards();
-        renderMealPlan();
-        renderGroceryList([]);
-        ui.grocerySummary.textContent = "Imported data loaded. Generate list to refresh groceries.";
-        showToast("Data imported.");
-      } catch {
-        showToast("Could not import this file.", true);
-      } finally {
-        ui.importFileInput.value = "";
-      }
-    };
-    reader.readAsText(file);
   }
 
   function importExcelRecipes(event) {
