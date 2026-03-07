@@ -1,6 +1,9 @@
 (() => {
+  // Storage keys for persisted app data and theme preference.
   const STORAGE_KEY = "recipe_planner_state_v1";
   const THEME_STORAGE_KEY = "recipe_planner_theme_v1";
+
+  // Fixed planner structure used by the weekly grid.
   const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const SLOTS = [
     { id: "breakfast", label: "Breakfast" },
@@ -8,6 +11,7 @@
     { id: "dinner", label: "Dinner" }
   ];
 
+  // Seed data shown on first load before localStorage exists.
   const defaultState = {
     recipes: [
       {
@@ -50,8 +54,10 @@
     mealPlan: createEmptyMealPlan()
   };
 
+  // Runtime state is initialized from localStorage with fallback to defaults.
   let state = loadState();
 
+  // Cached DOM references used throughout render/update handlers.
   const ui = {
     themeToggleBtn: document.getElementById("theme-toggle-btn"),
     themeToggleLabel: document.getElementById("theme-toggle-label"),
@@ -80,6 +86,7 @@
     toast: document.getElementById("toast")
   };
 
+  // Application bootstrap sequence.
   init();
 
   function init() {
@@ -92,6 +99,7 @@
     renderGroceryList([]);
   }
 
+  // Wires all UI interactions to handlers once at startup.
   function bindEvents() {
     ui.themeToggleBtn.addEventListener("click", toggleTheme);
     ui.addIngredientBtn.addEventListener("click", () => addIngredientRow());
@@ -109,6 +117,7 @@
     ui.importExcelInput.addEventListener("change", importExcelRecipes);
   }
 
+  // Picks saved theme first; falls back to system preference.
   function applyInitialTheme() {
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
     if (savedTheme === "light" || savedTheme === "dark") {
@@ -120,12 +129,14 @@
     setTheme(prefersDark ? "dark" : "light", false);
   }
 
+  // Switches between light and dark themes.
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
     const nextTheme = currentTheme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
   }
 
+  // Applies theme to the root element and optionally persists it.
   function setTheme(theme, persistTheme = true) {
     document.documentElement.setAttribute("data-theme", theme);
     ui.themeToggleLabel.textContent = theme === "dark" ? "Dark" : "Light";
@@ -135,6 +146,7 @@
     }
   }
 
+  // Builds an empty weekly planner object for all days and slots.
   function createEmptyMealPlan() {
     return DAYS.reduce((acc, day) => {
       acc[day] = { breakfast: "", lunch: "", dinner: "" };
@@ -142,6 +154,7 @@
     }, {});
   }
 
+  // Loads saved state defensively; invalid payloads fallback to defaults.
   function loadState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -158,10 +171,12 @@
     }
   }
 
+  // Persists current in-memory state to localStorage.
   function persist() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
+  // Ensures mealPlan always contains every day + slot expected by the UI.
   function ensureMealPlanShape() {
     const empty = createEmptyMealPlan();
     DAYS.forEach((day) => {
@@ -177,6 +192,7 @@
     persist();
   }
 
+  // Handles inline ingredient-row remove actions.
   function onIngredientListClick(event) {
     const btn = event.target.closest("button[data-action='remove-ingredient']");
     if (!btn) {
@@ -188,6 +204,7 @@
     }
   }
 
+  // Adds one ingredient row to the recipe form.
   function addIngredientRow(ingredient = { name: "", qty: "", unit: "" }) {
     const row = document.createElement("div");
     row.className = "ingredient-row";
@@ -200,6 +217,7 @@
     ui.ingredientsList.appendChild(row);
   }
 
+  // Reads and validates recipe form values before create/update.
   function getRecipeFormData() {
     const name = ui.recipeName.value.trim();
     const category = ui.recipeCategory.value;
@@ -225,6 +243,7 @@
     return { name, category, servings, instructions, ingredients };
   }
 
+  // Creates a new recipe or updates an existing one.
   function onRecipeSubmit(event) {
     event.preventDefault();
     try {
@@ -249,6 +268,7 @@
     }
   }
 
+  // Resets form fields to default "Add Recipe" mode.
   function resetForm() {
     ui.formTitle.textContent = "Add Recipe";
     ui.editId.value = "";
@@ -259,6 +279,7 @@
     addIngredientRow();
   }
 
+  // Renders searchable recipe cards and binds card-level actions.
   function renderRecipeCards() {
     const term = ui.recipeSearch.value.trim().toLowerCase();
     const filtered = state.recipes.filter((recipe) => {
@@ -307,6 +328,7 @@
     });
   }
 
+  // Loads a recipe into the form for editing.
   function editRecipe(id) {
     const recipe = state.recipes.find((item) => item.id === id);
     if (!recipe) {
@@ -323,6 +345,7 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // Deletes a recipe and removes it from any assigned meal slots.
   function deleteRecipe(id) {
     const recipe = state.recipes.find((item) => item.id === id);
     if (!recipe) {
@@ -346,6 +369,7 @@
     showToast("Recipe deleted.");
   }
 
+  // Renders weekly planner table with recipe dropdowns for each slot.
   function renderMealPlan() {
     const headerCells = ["Day", ...SLOTS.map((slot) => slot.label)]
       .map((label) => `<th>${label}</th>`)
@@ -374,6 +398,7 @@
     `;
   }
 
+  // Persists planner dropdown selections.
   function onMealPlanChange(event) {
     const select = event.target.closest("select[data-day][data-slot]");
     if (!select) {
@@ -385,6 +410,7 @@
     persist();
   }
 
+  // Clears the full week back to empty state.
   function clearWeek() {
     if (!window.confirm("Clear the full weekly meal plan?")) {
       return;
@@ -396,6 +422,7 @@
     showToast("Meal plan cleared.");
   }
 
+  // Aggregates ingredient quantities from all planned meals.
   function generateGroceryList() {
     const recipeMap = new Map(state.recipes.map((recipe) => [recipe.id, recipe]));
     const totals = new Map();
@@ -434,6 +461,7 @@
       : "No planned meals found. Add recipes to your weekly plan first.";
   }
 
+  // Renders grocery rows or clears the list when empty.
   function renderGroceryList(items) {
     if (!items.length) {
       ui.groceryList.innerHTML = "";
@@ -450,6 +478,7 @@
       .join("");
   }
 
+  // Copies visible grocery items to clipboard as plain text.
   async function copyGroceryList() {
     const lines = Array.from(ui.groceryList.querySelectorAll(".grocery-item")).map((row) => row.textContent.trim());
     if (!lines.length) {
@@ -465,6 +494,7 @@
     }
   }
 
+  // Exports full app state (recipes + meal plan) as JSON backup.
   function exportData() {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -477,6 +507,7 @@
     showToast("Data exported.");
   }
 
+  // Exports all recipes into a printable, cooking-ready HTML guide.
   function exportCookingGuide() {
     if (!state.recipes.length) {
       showToast("No recipes available to export.", true);
@@ -553,6 +584,7 @@
     showToast("Cooking guide exported.");
   }
 
+  // Imports recipes from first worksheet in .xlsx/.xls/.csv files.
   function importExcelRecipes(event) {
     const file = event.target.files?.[0];
     if (!file) {
@@ -612,6 +644,7 @@
     reader.readAsArrayBuffer(file);
   }
 
+  // Maps one worksheet row into internal recipe shape; invalid rows return null.
   function mapSheetRowToRecipe(row) {
     if (!row || typeof row !== "object") {
       return null;
@@ -638,6 +671,7 @@
     return { name, category, servings, instructions, ingredients };
   }
 
+  // Parses ingredient text: "Name|Qty|Unit; Name|Qty|Unit".
   function parseIngredientsCell(rawValue) {
     return String(rawValue || "")
       .split(";")
@@ -655,6 +689,7 @@
       .filter((ingredient) => ingredient.name);
   }
 
+  // Reads the first non-empty value from any supported column alias.
   function getCellByAliases(row, aliases) {
     const normalizedRow = {};
     Object.entries(row).forEach(([key, value]) => {
@@ -674,6 +709,7 @@
     return "";
   }
 
+  // Normalizes worksheet headers for flexible alias matching.
   function normalizeCellKey(key) {
     return String(key || "")
       .toLowerCase()
@@ -681,6 +717,7 @@
       .trim();
   }
 
+  // Displays short-lived status/errors in the Data Tools panel.
   function showToast(message, isError = false) {
     ui.toast.textContent = message;
     ui.toast.style.color = isError ? "var(--danger)" : "var(--accent-2)";
@@ -690,10 +727,12 @@
     }, 2600);
   }
 
+  // Lightweight unique id for client-side recipe entries.
   function createId() {
     return `${Date.now()}_${Math.floor(Math.random() * 1_000_000)}`;
   }
 
+  // Escapes dynamic text before injecting into HTML strings.
   function escapeHtml(input) {
     return input
       .replaceAll("&", "&amp;")
@@ -703,11 +742,13 @@
       .replaceAll("'", "&#039;");
   }
 
+  // Formats numeric quantities without unnecessary trailing zeros.
   function formatQty(value) {
     const num = Number(value || 0);
     return Number.isInteger(num) ? String(num) : num.toFixed(2).replace(/\.00$/, "");
   }
 
+  // Converts category labels to title-case.
   function capitalize(text) {
     if (!text) {
       return "";

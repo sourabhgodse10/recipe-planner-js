@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <!-- Main app shell -->
     <main class="page">
+      <!-- Hero / top controls -->
       <header class="hero">
         <div class="hero-top">
           <p class="chip"></p>
@@ -24,6 +26,7 @@
         <p>Build recipes, map weekly meals, and auto-generate one shopping list.</p>
       </header>
 
+      <!-- Recipe create/update form + recipe library -->
       <section class="grid two-col">
         <article class="panel">
           <div class="panel-head">
@@ -79,6 +82,7 @@
         </article>
       </section>
 
+      <!-- Weekly planner table -->
       <section class="panel">
         <div class="panel-head">
           <h2>Weekly Meal Plan</h2>
@@ -89,6 +93,7 @@
         </div>
       </section>
 
+      <!-- Grocery generator + data tools -->
       <section class="grid two-col">
         <article class="panel">
           <div class="panel-head">
@@ -109,6 +114,7 @@
             <button id="export-data-btn" class="ghost" type="button">Export JSON</button>
             <button id="export-cookbook-btn" class="ghost" type="button">Export Cooking Guide</button>
             <button id="import-excel-btn" class="ghost" type="button">Import Excel</button>
+            <!-- Hidden file input triggered from "Import Excel" button -->
             <input id="import-excel-input" type="file" accept=".xlsx,.xls,.csv" hidden />
           </div>
           <p class="muted">Excel format: Name, Category, Servings, Instructions, Ingredients (e.g. Eggs|4|pcs; Spinach|120|g).</p>
@@ -117,7 +123,9 @@
       </section>
     </main>
 
+    <!-- SheetJS for Excel parsing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- App logic -->
     <script src="./app.js"></script>
   </body>
 </html>
