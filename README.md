@@ -14,6 +14,7 @@ A vanilla JavaScript web app to manage recipes, plan meals for the week, and gen
 - Auto-generate grocery totals from planned meals
 - Copy grocery list to clipboard
 - Export and import app data as JSON
+- Export all recipes as a cooking-ready HTML guide
 - Import recipes in bulk from Excel (`.xlsx/.xls/.csv`)
 - Persist recipes and meal plans with `localStorage`
 

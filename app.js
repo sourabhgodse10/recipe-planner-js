@@ -71,6 +71,7 @@
     groceryList: document.getElementById("grocery-list"),
     copyListBtn: document.getElementById("copy-list-btn"),
     exportDataBtn: document.getElementById("export-data-btn"),
+    exportCookbookBtn: document.getElementById("export-cookbook-btn"),
     importDataBtn: document.getElementById("import-data-btn"),
     importFileInput: document.getElementById("import-file-input"),
     importExcelBtn: document.getElementById("import-excel-btn"),
@@ -100,6 +101,7 @@
     ui.generateListBtn.addEventListener("click", generateGroceryList);
     ui.copyListBtn.addEventListener("click", copyGroceryList);
     ui.exportDataBtn.addEventListener("click", exportData);
+    ui.exportCookbookBtn.addEventListener("click", exportCookingGuide);
     ui.importDataBtn.addEventListener("click", () => ui.importFileInput.click());
     ui.importFileInput.addEventListener("change", importData);
     ui.importExcelBtn.addEventListener("click", () => ui.importExcelInput.click());
@@ -446,6 +448,82 @@
     link.click();
     URL.revokeObjectURL(url);
     showToast("Data exported.");
+  }
+
+  function exportCookingGuide() {
+    if (!state.recipes.length) {
+      showToast("No recipes available to export.", true);
+      return;
+    }
+
+    const sortedRecipes = [...state.recipes].sort((a, b) => a.name.localeCompare(b.name));
+    const recipeSections = sortedRecipes
+      .map((recipe) => {
+        const ingredients = recipe.ingredients
+          .map((ingredient) => {
+            const qty = formatQty(ingredient.qty);
+            const unit = ingredient.unit ? ` ${escapeHtml(ingredient.unit)}` : "";
+            return `<li><label><input type="checkbox" /> ${escapeHtml(ingredient.name)} - ${qty}${unit}</label></li>`;
+          })
+          .join("");
+
+        const steps = recipe.instructions
+          ? `<p>${escapeHtml(recipe.instructions)}</p>`
+          : "<p>No instructions provided.</p>";
+
+        return `
+          <section class="recipe">
+            <h2>${escapeHtml(recipe.name)}</h2>
+            <p class="meta">${capitalize(recipe.category)} | Serves ${recipe.servings}</p>
+            <h3>Ingredients</h3>
+            <ul>${ingredients}</ul>
+            <h3>Instructions</h3>
+            ${steps}
+          </section>
+        `;
+      })
+      .join("");
+
+    const generatedAt = new Date().toLocaleString();
+    const guideHtml = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe Cooking Guide</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; color: #1f2937; line-height: 1.5; }
+      h1 { margin: 0 0 6px; }
+      .subtitle { color: #4b5563; margin-bottom: 18px; }
+      .recipe { border: 1px solid #d1d5db; border-radius: 12px; padding: 16px; margin-bottom: 16px; break-inside: avoid; }
+      .meta { color: #374151; margin: 0 0 12px; }
+      h2 { margin: 0 0 8px; }
+      h3 { margin: 12px 0 8px; }
+      ul { padding-left: 18px; margin: 0; }
+      li { margin-bottom: 6px; }
+      label { cursor: pointer; }
+      @media print {
+        body { margin: 12mm; }
+        .recipe { page-break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Recipe Cooking Guide</h1>
+    <p class="subtitle">Generated on ${escapeHtml(generatedAt)} | Total recipes: ${sortedRecipes.length}</p>
+    ${recipeSections}
+  </body>
+</html>`;
+
+    const blob = new Blob([guideHtml], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `recipe-cooking-guide-${date}.html`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast("Cooking guide exported.");
   }
 
   function importData(event) {
