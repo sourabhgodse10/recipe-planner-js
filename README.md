@@ -1,4 +1,4 @@
-# Recipe Planner JS
+# Recipe Planner JavaScript
 
 A vanilla JavaScript web app to manage recipes, plan meals for the week, and generate a consolidated grocery list.
 
